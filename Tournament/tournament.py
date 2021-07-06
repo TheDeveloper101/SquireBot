@@ -332,7 +332,7 @@ class tournament:
                 return mtch
     
     # ---------------- Misc ----------------
-    
+        
     def getStandings( self ) -> List[List]:
         rough = [ ]
         for plyr in self.players.values():
@@ -354,14 +354,14 @@ class tournament:
                 if games != 0:
                     OWP = wins/games
                 #OWP = sum( [ self.players[opp].getMatchWinPercentage( withBye=False ) for opp in plyr.opponents ] )/len(plyr.opponents)
-            rough.append( (points, MWP, OWP, plyr.discordUser.display_name) )
+            rough.append( (points, MWP, OWP, plyr) )
         
         # sort() is stable, so relate order similar elements is preserved
         rough.sort( key= lambda x: x[2], reverse=True )
         rough.sort( key= lambda x: x[1], reverse=True )
         rough.sort( key= lambda x: x[0], reverse=True )
         
-        # Place, Player name, Points, MWP, OWP
+        # Place, Player object, Points, MWP, OWP
         digest =  [ [ i+1 for i in range(len(rough))], \
                     [ i[3] for i in rough ], \
                     [ i[0] for i in rough ], \
@@ -394,7 +394,7 @@ class tournament:
                 winner = f'Winner: {self.players[mtch.winner].getMention()}'
             else:
                 winner = f'Winner: {mtch.winner if mtch.winner else "N/A"}'
-            oppens = "Opponents: " + ", ".join( [ Player.discordUser.mention for plyr in players if plyr != plyr ] )
+            oppens = "Opponents: " + ", ".join( [ f'<@{player}>' for player in players if player != plyr ] )
             digest.add_field( name=f'Match #{mtch.matchNumber}', value=f'{status}\n{winner}\n{oppens}' )
         return digest
 
@@ -420,7 +420,7 @@ class tournament:
             digest.add_field( name="Confirmed Players", value=", ".join( [ self.players[plyr].getMention() for plyr in Match.confirmedPlayers ] ) )
             
         if Match.triceMatch:
-            digest.add_field( name="Tricebot Match", value = f'Replay at: {Match.replayURL}' )
+            digest.add_field( name="Tricebot Match", value = f'Replay at: {Match.replayURL}\nPlayer deck verification is {"enabled" if Match.playerDeckVerification else "disabled "}' )
             
         return digest
     

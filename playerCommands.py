@@ -25,7 +25,7 @@ def createStandingsEmbeds( places: List[str], names: List[str], points: List[str
     values  = [ "\u200b", "\u200b", "\u200b" ]
     
     for i in range(length):
-        line = [ f'{places[i]}) {names[i]}\n', f'{points[i]},\t{trunk(GWP[i])}%\n', f'{trunk(OWP[i])}%\n' ]
+        line = [ f'{places[i]}) <@{names[i].discordID}>\n', f'{points[i]},\t{trunk(GWP[i])}%\n', f'{trunk(OWP[i])}%\n' ]
         line_lengths = [ len(s) for s in line ]
         if (len(values[0]) + line_lengths[0] <= limit) and (len(values[1]) + line_lengths[1] <= limit) and (len(values[2]) + line_lengths[2] <= limit):
             values  = [ values[i] + line[i] for i in range(len(values)) ]
@@ -534,6 +534,9 @@ async def standings( ctx, tourn = None, printAll = None ):
         return
     
     standings = tournObj.getStandings( )
+    if len(tournObj.players) < 1:
+        await ctx.send( "There are no players registered in this tournament." )
+        return
     name = tournObj.players[ctx.author.id].getDisplayName()
     
     if name in standings[1] and not printAll:
@@ -543,6 +546,9 @@ async def standings( ctx, tourn = None, printAll = None ):
         if upper < 0:
             upper = 0
         for i in range(len(standings)):
+            # player object to player names
+            for j in range(len(standings[1])):
+                standings[1][j] = standings[1][j].discordUser.display_name
             standings[i] = standings[i][upper:lower]
         
     embeds = createStandingsEmbeds( standings[0], standings[1], standings[2], standings[3], standings[4] )
