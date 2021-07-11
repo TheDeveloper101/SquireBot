@@ -158,8 +158,8 @@ class fluidRoundTournament(tournament):
                 if lvl[i].discordID == plyr:
                     del( lvl[i] )
                     self.saveOverview( )
-                    return None
-        return None
+                    return "you have been removed from the queue."
+        return "you were not in the queue."
 
     # Wrapper for self._pairQueue so that it can be ran on a seperate thread
     def _launch_pairings( self, waitTime ):
