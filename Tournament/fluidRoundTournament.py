@@ -156,7 +156,7 @@ class fluidRoundTournament(tournament):
         for lvl in self.queue:
             for i in range(len(lvl)):
                 if lvl[i].discordID == plyr:
-                    del( lvl[i] )
+                    lvl.remove(self.players[plyr])
                     self.saveOverview( )
                     return "you have been removed from the queue."
         return "you were not in the queue."
