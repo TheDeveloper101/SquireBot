@@ -616,7 +616,8 @@ class tournament:
             except:
                 pass
 
-    async def endTourn( self, adminMention: str = "", author: str = "" ) -> str:
+    async def endTourn( self, adminMention: str = "", author: str = "" ) -> commandResponse:
+        digest = commandResponse( )
         if not self.tournStarted:
             return f'{self.name} has not started, so it cannot be ended. However, it can be cancelled.'
         await self.purgeTourn( )
@@ -625,7 +626,8 @@ class tournament:
         if os.path.isdir( f'currentTournaments/{self.name}' ):
             shutil.rmtree( f'currentTournaments/{self.name}' )
         await self.updateInfoMessage()
-        return f'{adminMention}, {self.name} has been closed by {author}.'
+        digest.setContent( f'{adminMention}, {self.name} has been closed by {author}.' )
+        return digest
 
     async def cancelTourn( self, adminMention: str = "", author: str = "") -> str:
         await self.purgeTourn( )
