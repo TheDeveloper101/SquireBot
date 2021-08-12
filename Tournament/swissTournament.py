@@ -90,8 +90,8 @@ class swissTournament(tournament):
         digest = commandResponse( )
         for plyr in self.pairingSystem.savedByes:
             await self.addBye( plyr.uuid, mention )
-        for pairing in self.pairingSystem.savedPairings:
-            await self.addMatch( pairing )
+        for i, pairing in enumerate(self.pairingSystem.savedPairings):
+            await self.addMatch( pairing, i+1 )
         digest.setContent( f'{mention}, the round has been paired.' )
         return digest
 

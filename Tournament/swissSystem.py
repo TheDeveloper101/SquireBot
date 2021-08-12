@@ -134,11 +134,8 @@ class swissSystem:
         # In the unlikely event that proper pairings can't be formed, 
         # Players are paired together, regardless of thier past opponents
         if matchSize*len(tries[-1]) != len(standings):
-            for i in range(len(standings))[::4]:
-                self.savedPairings.append( [ standings[i  ],
-                                             standings[i+1],
-                                             standings[i+2],
-                                             standings[i+3] ] )
+            for i in range(len(standings))[::matchSize]:
+                self.savedPairings.append( standings[i:i+matchSize] )
         else:
             self.savedPairings = tries[-1]
 

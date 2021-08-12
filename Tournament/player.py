@@ -128,7 +128,7 @@ class player:
         return sum( 1 for mtch in self.matches if mtch.isBye() )
 
     def getDeckEmbed( self, a_deckname: str ) -> discord.Embed:
-        digest = discord.Embed( title=f"**{self.name}'s Deck,** **{a_deckname}**: **{self.decks[a_deckname].deckHash}**" )
+        digest = discord.Embed( title=f"**{self.name}'s Deck,** **{a_deckname}**" )
 
         fieldVals: dict = { "Sideboard": [] }
         for card_ in self.decks[a_deckname].cards:

@@ -451,7 +451,7 @@ class tournament:
                 bioInfo += f'Cockatrice Name: {Plyr.triceName}\n'
             bioInfo += f'Reg. Status: {"Registered" if Plyr.isActive() else "Dropped"}'
             embed.add_field( name="Biographic Info:", value=bioInfo )
-            deckPairs = [ f'{d}: {Plyr.decks[d].deckHash}' for d in Plyr.decks ]
+            deckPairs = [ f'{d}' for d in Plyr.decks ]
             embed.add_field( name="Decks:", value=("\u200b" + "\n".join(deckPairs)) )
             for mtch in Plyr.matches:
                 players = mtch.activePlayers + mtch.droppedPlayers
@@ -527,9 +527,7 @@ class tournament:
         Plyr.saveXML( )
         deckHash = self.getPlayer(plyr).decks[deckName].deckHash
 
-        message = f'your deck has been successfully registered in {self.name}. Your deck name is "{deckName}", and the deck hash is "{deckHash}". Make sure it matches your deck hash in Cockatrice. You can see your decklist by using !decklist "{deckName}" or !decklist {deckHash}.'
-        if isMoxFieldLink(decklist) or isTappedOutLink(decklist) or isMtgGoldfishLink(decklist):
-            message += f'\nPlease be aware that this website treats your commander as if it were in your mainboard.'
+        message = f'your deck has been successfully registered in {self.name}. Your deck name is "{deckName}" You can see your decklist by using !decklist "{deckName}".'
         await self.updateInfoMessage( )
         return message
 
@@ -545,9 +543,9 @@ class tournament:
             Plyr.addDeck( deckName, decklist )
             Plyr.saveXML( )
             deckHash = Plyr.decks[deckName].deckHash
-            await Plyr.sendMessage( content = f'A decklist has been submitted for {self.name} on your behalf. The name of the deck is "{deckName}" and the deck hash is "{deckHash}". Use the command "!decklist {deckName}" to see the list. Please contact tournament staff if there is an error.' )
+            await Plyr.sendMessage( content = f'A decklist has been submitted for {self.name} on your behalf. The name of the deck is "{deckName}". Use the command "!decklist {deckName}" to see the list. Please contact tournament staff if there is an error.' )
             await self.updateInfoMessage( )
-            digest.setContent( f'{mention}, you have submitted a decklist for {plyr}. The deck hash is {deckHash}.' )
+            digest.setContent( f'{mention}, you have submitted a decklist for {Plyr.getMention()}.' )
 
         return digest
 
@@ -889,7 +887,7 @@ class tournament:
             mtch.sentFinalWarning = True
         mtch.saveXML( )
 
-    async def addMatch( self, plyrs: List ) -> None:
+    async def addMatch( self, plyrs: List, tableNumber: int = -1 ) -> None:
         print( "Creating a new match." )
         newMatch = match( plyrs )
         self.matches.append( newMatch )
@@ -903,18 +901,21 @@ class tournament:
                            getAdminRole(self.guild): discord.PermissionOverwrite(read_messages=True),
                            getJudgeRole(self.guild): discord.PermissionOverwrite(read_messages=True),
                            matchRole: discord.PermissionOverwrite(read_messages=True) }
-            matchCategory = discord.utils.get( self.guild.categories, name="Matches" )
-            if len(matchCategory.channels) >= 50:
-                matchCategory = category=discord.utils.get( self.guild.categories, name="More Matches" )
+            #matchCategory = discord.utils.get( self.guild.categories, name="Matches" )
+            #if len(matchCategory.channels) >= 50:
+                #matchCategory = category=discord.utils.get( self.guild.categories, name="More Matches" )
 
             game_name: str = f'{self.name} Match {newMatch.matchNumber}'
 
-            newMatch.VC    = await matchCategory.create_voice_channel( name=game_name, overwrites=overwrites )
+            #newMatch.VC    = await matchCategory.create_voice_channel( name=game_name, overwrites=overwrites )
             newMatch.role  = matchRole
             newMatch.timer = threading.Thread( target=self._matchTimer, args=(newMatch,) )
 
-            message = f'\n{matchRole.mention} of {self.name}, you have been paired. A voice channel has been created for you. Below is information about your opponents.\n'
-            embed   = discord.Embed( )
+            message = f'\n{matchRole.mention} of {self.name}, you have been paired. Below is information about your opponents.\n'
+            if tableNumber == -1:
+                embed = discord.Embed( )
+            else:
+                embed = discord.Embed( title=f'**Table #{tableNumber}**' )
 
             if self.triceBotEnabled:
                 #This causes the replay to get saved into a folder
@@ -974,7 +975,7 @@ class tournament:
                 plyr.addOpponent( p )
             if type( self.guild ) == discord.Guild:
                 await plyr.addRole( matchRole )
-                embed.add_field( name=plyr.getDisplayName(), value=plyr.pairingString() )
+        embed.add_field( name=f'**Players**', value=", ".join( [f'{plyr.getMention()}' for plyr in plyrs ] ) )
 
         for plyr in plyrs:
             plyr.saveXML()
