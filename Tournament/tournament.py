@@ -773,7 +773,7 @@ class tournament:
             message = await mtch.confirmResult( Plyr )
             if "announcement" in message:
                 await self.pairingsChannel.send( message["announcement"] )
-                digest.setContent( message["message"] )
+            digest.setContent( message["message"] )
             await self.updateInfoMessage( )
             mtch.saveXML( )
 
@@ -893,7 +893,7 @@ class tournament:
         print( "Creating a new match." )
         newMatch = match( plyrs )
         self.matches.append( newMatch )
-        newMatch.matchNumber = len(self.matches)
+        newMatch.matchNumber = len(self.matches) + 1
         newMatch.matchLength = self.matchLength
         newMatch.saveLocation = f'{self.getSaveLocation()}/matches/match_{newMatch.matchNumber}.xml'
         # TODO: Why is this being checked...
@@ -1012,9 +1012,10 @@ class tournament:
         else:
             await self.removePlayerFromQueue( Plyr )
             newMatch = match( [ Plyr ] )
-            newMatch.matchNumber = len(self.matches)
+            newMatch.matchNumber = len(self.matches) + 1
             newMatch.saveLocation = f'{self.getSaveLocation()}/matches/match_{newMatch.matchNumber}.xml'
             newMatch.recordBye( )
+            newMatch.saveXML( )
             self.matches.append( newMatch )
             Plyr.matches.append( newMatch )
             newMatch.saveXML( )
@@ -1027,18 +1028,15 @@ class tournament:
 
     async def removeMatch( self, matchNum: int, author: str = "" ) -> str:
         digest = commandResponse( )
-        if self.matches[matchNum - 1] != matchNum:
+        if self.matches[matchNum - 1].matchNumber != matchNum:
             self.matches.sort( key=lambda x: x.matchNumber )
-
-        # TODO: This is one of several places where player references in matches would be very helpful
+        
         for plyr in self.matches[matchNum - 1].activePlayers:
-            Plyr = self.getPlayer( plyr )
-            await Plyr.removeMatch( matchNum )
-            await Plyr.sendMessage( content=f'You were a particpant in match #{matchNum} in the tournament {self.name}. This match has been removed by tournament staff. If you think this is an error, contact them.' )
+            await plyr.removeMatch( matchNum - 1 )
+            await plyr.sendMessage( content=f'You were a particpant in match #{matchNum} in the tournament {self.name}. This match has been removed by tournament staff. If you think this is an error, contact them.' )
         for plyr in self.matches[matchNum - 1].droppedPlayers:
-            Plyr = self.getPlayer( plyr )
-            await Plyr.removeMatch( matchNum )
-            await Plyr.sendMessage( content=f'You were a particpant in match #{matchNum} in the tournament {self.name} on the server {self.hostGuildName}. This match has been removed by tournament staff. If you think this is an error, contact them.' )
+            await plyr.removeMatch( matchNum - 1)
+            await plyr.sendMessage( content=f'You were a particpant in match #{matchNum} in the tournament {self.name} on the server {self.hostGuildName}. This match has been removed by tournament staff. If you think this is an error, contact them.' )
 
         await self.matches[matchNum - 1].killMatch( )
         self.matches[matchNum - 1].saveXML( )

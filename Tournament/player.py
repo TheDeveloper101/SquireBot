@@ -187,6 +187,8 @@ class player:
     def hasOpenMatch( self ) -> bool:
         digest = False
         for mtch in self.matches:
+            if mtch.isDead():
+                continue
             digest |= not mtch.isCertified( )
         return digest
 

@@ -354,7 +354,7 @@ async def adminCreatePairing( ctx, tourn = None, *plyrs ):
         Plyrs.append( tournObj.getPlayer( get_ID_from_mention(plyr) ) )
         if Plyrs[-1] is None:
             message += f'{mention}, a player by {plyr!r} is not registerd for {tourn}.\n'
-        if not Plyrs[-1].isActive():
+        elif not Plyrs[-1].isActive():
             message += f'{mention}, {Plyrs[-1].getMention()} is registered but is not an active player in {tourn}.\n'
 
     if len(message) != 0:

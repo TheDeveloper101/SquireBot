@@ -89,7 +89,7 @@ def get_ID_from_mention( mention: str ) -> str:
     """ Gets a Discord ID from a Discord mention string """
     if mention is None:
         return None
-    return re.sub( r"<@[^0-9]?([0-9]+)>", r"\1", mention )
+    return re.sub( r"<[#@][^0-9]?([0-9]+)>", r"\1", mention )
 
 def getPrimaryType( types: List[str] ) -> str:
     if   "Creature" in types:

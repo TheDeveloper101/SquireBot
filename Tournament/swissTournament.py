@@ -66,10 +66,10 @@ class swissTournament(tournament):
     def createPairings( self, mention: str ) -> commandResponse:
         """ Creates the pairings for the next round. Needs confirmation for matches are created. """
         digest = commandResponse( )
-        uncertMatches = [ mtch for mtch in self.matches if not mtch.isCertified() ]
+        uncertMatches = [ mtch for mtch in self.matches if not mtch.isCertified() and not mtch.isDead() ]
         if len(uncertMatches) != 0:
             newLine = "\n\t- "
-            digest.setContent( f'{mention}, below are the matches that are not certified. They their result needs to be confirmed before pairing the next round.{newLine}{newLine.join([mtch.matchNumber for mtch in uncertMatches ] )}' )
+            digest.setContent( f'{mention}, below are the matches that are not certified. They their result needs to be confirmed before pairing the next round.{newLine}{newLine.join([str(mtch.matchNumber) for mtch in uncertMatches ] )}' )
         else:
             self.pairingSystem.queue = [ ]
             standings = [ ]
@@ -98,7 +98,7 @@ class swissTournament(tournament):
     # ---------------- XML Saving/Loading ----------------
 
     def saveTournamentType( self, filename: str = "" ) -> None:
-        print( "Fluid Round tournament type being saved." )
+        print( "Swiss tournament type being saved." )
         with open( filename, 'w+' ) as xmlfile:
             xmlfile.write( "<?xml version='1.0'?>\n<type>swissTournament</type>" )
 

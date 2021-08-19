@@ -402,6 +402,7 @@ class guildSettings:
             tourn = tournamentSelector( f'{tournDir}/tournamentType.xml', tournDir.split("/")[-2], self.guild.name, {} )
             tourn.loadTournament( tournDir )
             await tourn.assignGuild( self.guild )
+            print( tourn.getSaveLocation() )
             self.tournaments.append( tourn )
 
 
