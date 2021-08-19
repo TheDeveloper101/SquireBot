@@ -5,10 +5,13 @@ import tempfile
 
 from discord.ext import commands
 from dotenv import load_dotenv
+from discord_slash import SlashCommand, SlashContext
+from discord_slash.utils.manage_commands import create_choice, create_option
 
 from baseBot import *
 from Tournament import *
 
+slash = SlashCommand(bot, sync_commands=True)
 
 commandSnippets["setup"] = "- setup : Creates a tournament and has a toggle to enable tricebot."
 commandCategories["management"].append("setup")
@@ -35,6 +38,86 @@ async def setupGuild( ctx ):
     await ctx.send( content=f'{mention}, below are the channels/categories that are going to be created. They can be moved around as desired. Are you sure you want to finish setting up (!yes/!no)?', embed=embed )
 
 
+# Slash Command to Create Tournament
+@slash.slash(name="create-tournament-WIP", description="Create a tournament", options=[
+    create_option(
+        name="tournament_name",
+        description="What the tournament will be called",
+        required=True,
+        option_type=3
+    ),
+create_option(
+        name="tournament_type",
+        description="Structure of the tournament",
+        required=True,
+        option_type=3,
+        choices=[
+            create_choice(
+                name="fluidroundtournament",
+                value="Fluid Round Tournament"
+            ),
+            create_choice(
+                name="swisstournament",
+                value="Swiss Tournament"
+            )
+        ]
+    ),
+    create_option(
+        name="tournament_format",
+        description="What format will the tournament be",
+        required=True,
+        option_type=3,
+        choices=[
+            create_choice(
+                name="Commander",
+                value="Commander/EDH (Elder Dragon Highlander)"
+            ),
+            create_choice(
+                name="Open Legend",
+                value="Open Legend"
+            )
+        ]
+    )
+])
+async def slash_create_tournament(ctx: SlashContext, tournament_name: str, tournament_type: str, tournament_format: str):
+    mention = ctx.author.mention
+    gld = guildSettingsObjects[ctx.guild.id]
+
+    if await isPrivateMessage( ctx ): return
+    if not await isTournamentAdmin( ctx ): return
+
+    # tournProps
+
+    admin_mention = gld.getTournAdminRole().mention
+    if tournament_name is None or tournType is None:
+        await ctx.send( f'{mention}, you need to specify what you want the tournament name and type.' )
+        return
+    elif isPathSafeName(tournament_name) or "@everyone" in tournament_name:
+        await ctx.send( f'{mention}, you cannot have that as a tournament name.' )
+        return
+
+    shouldBeNone = gld.getTournament(tournament_name)
+    if not (shouldBeNone is None):
+        await ctx.send(
+            f'{mention}, there is already a tournament call {tournament_name} on this server. Pick a different name.')
+        return
+
+    try:
+        message = await gld.createTournament(tournament_type, tournament_name, None) # NO OPTIONS FOR TESTING
+    except NotImplementedError as e:
+        print(e)
+        newLine = "\n\t- "
+        await ctx.send( f'{mention}, invalid tournament type of {tournType}. The supported tournament types are:{newLine}{newLine.join(tournamentTypes)}.' )
+        return
+
+    trice = ""
+    # Was tricebot specified and was it specified to be True?
+    # if "tricebot-enabled" in tournProps and tournProps["tricebot-enabled"]:
+    #   trice = f' with TriceBot enabled'
+
+    await ctx.send( f'{admin_mention}, a new tournament called {tournament_name} was created{trice} by {mention}:\n{message}' )
+
+# Regular tournament creation command
 commandSnippets["create-tournament"] = "- create-tournament : Creates a tournament and has a toggle to enable tricebot."
 commandCategories["management"].append("create-tournament")
 @bot.command(name='create-tournament')
