@@ -382,8 +382,8 @@ class tournament:
         digest = discord.Embed()
         bioInfo: str = f'Discord Name: {Player.getMention()}\n'
         bioInfo += f'Discord ID: {Player.discordUser.id}\n'
-        if Player.triceName != "":
-            bioInfo += f'Cockatrice Name: {Player.triceName}\n'
+        #if Player.triceName != "":
+            #bioInfo += f'Cockatrice Name: {Player.triceName}\n'
         bioInfo += f'Reg. Status: {"Registered" if Player.isActive() else "Dropped"}'
         digest.add_field( name="Biographic Info:", value=bioInfo )
         deckPairs = [ f'{d}: {Player.decks[d].deckHash}' for d in Player.decks ]
@@ -444,12 +444,10 @@ class tournament:
         deckHash = self.players[plyr].decks[deckName].deckHash
 
         if admin:
-            await self.players[plyr].discordUser.send( content = f'A decklist has been submitted for {self.name} on your behalf. The name of the deck is "{deckName}" and the deck hash is "{deckHash}". Use the command "!decklist {deckName}" to see the list. Please contact tournament staff if there is an error.' )
-            return f'you have submitted a decklist for {self.players[plyr].getMention()}. The deck hash is {deckHash}.'
-        message = f'your deck has been successfully registered in {self.name}. Your deck name is "{deckName}", and the deck hash is "{deckHash}". Make sure it matches your deck hash in Cockatrice. You can see your decklist by using !decklist "{deckName}" or !decklist {deckHash}.'
+            await self.players[plyr].discordUser.send( content = f'A decklist has been submitted for {self.name} on your behalf. The name of the deck is "{deckName}". Use the command "!decklist {deckName}" to see the list. Please contact tournament staff if there is an error.' )
+            return f'you have submitted a decklist for {self.players[plyr].getMention()}.'
+        message = f'your deck has been successfully registered in {self.name}. Your deck name is "{deckName}". You can see your decklist by using !decklist "{deckName}".'
 
-        if isMoxFieldLink(decklist) or isTappedOutLink(decklist) or isMtgGoldfishLink(decklist):
-            message += f'\nPlease be aware that this website treats your commander as if it were in your mainboard.'
         return message
 
     async def removeDeck( self, plyr: int, deckName: str = "", author: str = "" ) -> str:

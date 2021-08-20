@@ -110,11 +110,11 @@ class pairingQueue:
     def addPlayer( self, plyr: player, index: int = 0 ) -> str:
         """ Adds a player to the queue """
         if self._isInQueue( plyr ):
-            return f'{plyr.getMention()}, you are already in the queue.'
+            return f'{plyr.getMention()}, you are already in the queue'
         while index > self.height() - 2:
             self.queue.append( [ ] )
         self.queue[index].append( plyr )
-        return f'{plyr.getMention()}, you have been added to the queue.'
+        return f'{plyr.getMention()}, you have been added to the queue'
 
     def removePlayer( self, plyr: player ) -> str:
         """ Removes a player from the queue """

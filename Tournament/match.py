@@ -173,7 +173,7 @@ class match:
             self.confirmedPlayers.append( a_player )
         if await self.confirmMatch( ):
             self.stopTimer = True
-            return f'{self.getMention()}, your match has been certified. You can join the matchmaking queue again.'
+            return f'{self.getMention()}, your match has been certified.'
         #else:
         #    return f'you have confirmed the result of match #{self.matchNumber}.'
     

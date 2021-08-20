@@ -253,7 +253,7 @@ async def removeDecklist( ctx, tourn = None, ident = None ):
     mention = ctx.author.mention
 
     if tourn is None:
-        await ctx.send( f'{mention}, not enough information provided: Please provide your deckname or deck hash to remove your deck.' )
+        await ctx.send( f'{mention}, not enough information provided: Please provide your deckname to remove your deck.' )
         return
 
     private = await isPrivateMessage( ctx, send=False )
@@ -283,7 +283,7 @@ async def removeDecklist( ctx, tourn = None, ident = None ):
         if len( tournObj.players[ctx.author.id].decks ) < 1:
             await ctx.send( f'{mention}, you do not have any decks registered for {tourn}.' )
         else:
-            await ctx.send( f'{mention}, you do not have a deck whose name or hash is {ident!r}. To see the decks you have registered, use !decks {tourn}' )
+            await ctx.send( f'{mention}, you do not have a deck whose name is {ident!r}. To see the decks you have registered, use !decks {tourn}' )
         return
 
     if await hasCommandWaiting( ctx, ctx.author.id ):
@@ -293,7 +293,7 @@ async def removeDecklist( ctx, tourn = None, ident = None ):
     await ctx.send( f'{mention}, in order to remove your deck, you need to confirm your request. Are you sure you want to remove it? (!yes/!no)' )
     
 
-commandSnippets["decks"] = "- decks : Lists the names and hashes of the decks you've registered (can be DM-ed)"
+commandSnippets["decks"] = "- decks : Lists the names of the decks you've registered (can be DM-ed)"
 commandCategories["registration"].append( "decks" )
 @bot.command(name='decks')
 async def listDeck( ctx, tourn = None ):
@@ -325,10 +325,8 @@ async def listDeck( ctx, tourn = None ):
         return
     
     names  = [ deck for deck in tournObj.players[ctx.author.id].decks ]
-    hashes = [ str(deck.deckHash) for deck in tournObj.players[ctx.author.id].decks.values() ]
     embed = discord.Embed( )
     embed.add_field( name="Deck Names", value="\n".join(names) )
-    embed.add_field( name="Deck Hashes", value="\n".join(hashes) )
     
     await ctx.send( content=f'{mention}, here are the decks that you currently have registered:', embed=embed )
     
@@ -700,7 +698,7 @@ async def printDecklist( ctx, tourn = None, ident = None ):
     private = await isPrivateMessage( ctx, send = False )
 
     if tourn is None:
-        await ctx.send( f'{mention}, not enough information provided: Please provide your deckname or deck hash to list your deck.' )
+        await ctx.send( f'{mention}, not enough information provided: Please provide your deckname to list your deck.' )
         return
 
     tournaments: list = getTournamentsByPlayer( ctx.author ) if private else guildSettingsObjects[ctx.guild.id].getPlayerTournaments( ctx.author )
@@ -726,7 +724,7 @@ async def printDecklist( ctx, tourn = None, ident = None ):
         if len(tournObj.players[ctx.author.id].decks) == 0:
             await ctx.send( f'{mention}, you do not have any decks registered for {tourn}.' )
         else:
-            await ctx.send( f'{mention}, you do not have a deck registered for {tourn} whose name/hash is {tourn!r}.' )
+            await ctx.send( f'{mention}, you do not have a deck registered for {tourn} whose name is {tourn!r}.' )
         return
 
     if await isPrivateMessage( ctx, send=False ):

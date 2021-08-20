@@ -50,7 +50,7 @@ class player:
         newLine = "\n\t- "
         digest  = f'Player Name: {self.name}\n'
         digest += f'Disord Nickname: {self.getMention()}\n'
-        digest += f'Cockatrice Username: {self.triceName}\n'
+        #digest += f'Cockatrice Username: {self.triceName}\n'
         digest += f'Status: {self.status}\n'
         digest += f'Decks:{newLine}{newLine.join( [ str(self.decks[ident]) for ident in self.decks ] )}\n'
         digest += f'Matches:{newLine}{newLine.join( [ str(mtch) for mtch in self.matches ] )}'
@@ -131,8 +131,8 @@ class player:
 
     def pairingString( self ):
         digest = "\u200b\u200b"
-        if self.triceName != "":
-            digest += f'Cockatrice Username: {self.triceName}\n'
+        #if self.triceName != "":
+            #digest += f'Cockatrice Username: {self.triceName}\n'
         counter = 0
         for deck in self.decks:
             counter += 1
@@ -258,7 +258,7 @@ class player:
         if author != "":
             await self.discordUser.send( content=f'Your deck {a_ident} has been removed by tournament admin.' )
             return f'{author}, the deck {a_ident} has been removed from {self.getMention()}.'
-        return f'{self.getMention()}, your decklist whose name or deck hash was "{a_ident}" has been deleted.'
+        return f'{self.getMention()}, your decklist whose name was "{a_ident}" has been deleted.'
 
     def getDeckIdent( self, ident: str = "" ) -> str:
         if ident in self.decks:
