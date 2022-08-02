@@ -73,7 +73,7 @@ async fn decklist(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult
         .get_player(&PlayerIdentifier::Id(player_id))
         .unwrap();
     let response = String::new();
-    match player.get_deck(&deck_name) {
+    match player.get_deck(deck_name) {
         Some(deck) => {
             let sorted_deck = TypeSortedDeck::from(deck);
             match msg.channel(&ctx.http).await? {
